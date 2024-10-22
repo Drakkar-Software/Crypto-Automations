@@ -1,5 +1,5 @@
 #  This file is part of Crypto-Automations (https://github.com/Drakkar-Software/Crypto-Automations)
-#  Copyright (c) 2023 Drakkar-Software, All rights reserved.
+#  Copyright (c) 2024 Drakkar-Software, All rights reserved.
 #
 #  OctoBot is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU General Public License
@@ -17,3 +17,5 @@
 
 ADDITIONAL_IMPORT_PATH = "imports"
 CONFIG_PATH = "config"
+
+EXCHANGE_CONFIG_PATH = "exchanges.json"

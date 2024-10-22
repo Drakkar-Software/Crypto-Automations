@@ -13,15 +13,29 @@
 #
 #  You should have received a copy of the GNU General Public
 #  License along with Crypto-Automations. If not, see <https://www.gnu.org/licenses/>.
-import asyncio
-import crypto_automations as ca
+import typing
 
 
-async def main():
-    await ca.setup(True)
+class OctoBotExchange:
+    def __init__(self,
+                 name: str,
+                 internal_name: str,
+                 api_key: str,
+                 api_secret: str,
+                 api_password: typing.Optional[str] = None):
+        self.name = name
+        self.internal_name = internal_name
+        self.api_key = api_key
+        self.api_secret = api_secret
+        self.api_password = api_password
 
-    move_from_binance_to_kucoin_rule = ca.Transfer(['binance-test-1'], ['kucoin-test-1'], ['BTC'], {'BTC': 0.1})
-    await move_from_binance_to_kucoin_rule.run()
+
+EXCHANGE_INSTANCES: typing.List[OctoBotExchange] = []
 
 
-asyncio.run(main())
+def add_new_exchange(exchange: OctoBotExchange):
+    EXCHANGE_INSTANCES.append(exchange)
+
+
+def get_exchange(name: str) -> typing.Optional[OctoBotExchange]:
+    return next((exchange for exchange in EXCHANGE_INSTANCES if exchange.name == name), None)

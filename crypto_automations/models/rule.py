@@ -1,5 +1,5 @@
 #  This file is part of Crypto-Automations (https://github.com/Drakkar-Software/Crypto-Automations)
-#  Copyright (c) 2023 Drakkar-Software, All rights reserved.
+#  Copyright (c) 2024 Drakkar-Software, All rights reserved.
 #
 #  OctoBot is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU General Public License
@@ -21,9 +21,6 @@ class Rule:
 
     def __init__(self):
         pass
-
-    async def initialize(self):
-        raise NotImplementedError("initialize is not implemented")
 
     async def run(self):
         raise NotImplementedError("run is not implemented")

@@ -1,5 +1,5 @@
 #  This file is part of Crypto-Automations (https://github.com/Drakkar-Software/Crypto-Automations)
-#  Copyright (c) 2023 Drakkar-Software, All rights reserved.
+#  Copyright (c) 2024 Drakkar-Software, All rights reserved.
 #
 #  OctoBot is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU General Public License
@@ -13,3 +13,6 @@
 #
 #  You should have received a copy of the GNU General Public
 #  License along with Crypto-Automations. If not, see <https://www.gnu.org/licenses/>.
+
+from crypto_automations.models.action import *
+from crypto_automations.models.rule import *

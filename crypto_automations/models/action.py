@@ -1,5 +1,5 @@
 #  This file is part of Crypto-Automations (https://github.com/Drakkar-Software/Crypto-Automations)
-#  Copyright (c) 2023 Drakkar-Software, All rights reserved.
+#  Copyright (c) 2024 Drakkar-Software, All rights reserved.
 #
 #  OctoBot is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU General Public License
@@ -13,18 +13,14 @@
 #
 #  You should have received a copy of the GNU General Public
 #  License along with Crypto-Automations. If not, see <https://www.gnu.org/licenses/>.
-from crypto_automations.models.automation import Automation
+import abc
 
 
-class Withdraw(Automation):
-    def __init__(self, source_exchange, destination_exchange, asset, amount):
-        super().__init__()
-        self.source_exchange = source_exchange
-        self.destination_exchange = destination_exchange
-        self.asset = asset
-        self.amount = amount
+class Action:
+    __metaclass__ = abc.ABCMeta
+
+    def __init__(self):
+        pass
 
     async def run(self):
-        # get the deposit address
-        # withdraw to destination
-        pass
+        raise NotImplementedError("run is not implemented")

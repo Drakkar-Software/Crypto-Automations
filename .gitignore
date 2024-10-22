@@ -164,3 +164,7 @@ cython_debug/
 # octobot
 tentacles
 user
+
+# crypto automations
+exchanges.json
+
