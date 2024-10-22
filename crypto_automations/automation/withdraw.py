@@ -13,16 +13,18 @@
 #
 #  You should have received a copy of the GNU General Public
 #  License along with Crypto-Automations. If not, see <https://www.gnu.org/licenses/>.
-import asyncio
-import crypto_automations as ca
+from crypto_automations.models.automation import Automation
 
 
-async def main():
-    await ca.setup(True)
+class Withdraw(Automation):
+    def __init__(self, source_exchange, destination_exchange, asset, amount):
+        super().__init__()
+        self.source_exchange = source_exchange
+        self.destination_exchange = destination_exchange
+        self.asset = asset
+        self.amount = amount
 
-    move_from_binance_to_kucoin_rule = ca.Transfer([], [], ['BTC'], {'BTC': 0.1})
-    await move_from_binance_to_kucoin_rule.initialize()
-    await move_from_binance_to_kucoin_rule.run()
-
-
-asyncio.run(main())
+    async def run(self):
+        # get the deposit address
+        # withdraw to destination
+        pass

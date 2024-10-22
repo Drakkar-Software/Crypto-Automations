@@ -54,4 +54,7 @@ except ImportError:
     pass
 
 from crypto_automations.constants import *
+from crypto_automations.models import *
+from crypto_automations.rules import *
+from crypto_automations.automation import *
 from crypto_automations.setup import *

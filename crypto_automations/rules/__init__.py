@@ -13,16 +13,5 @@
 #
 #  You should have received a copy of the GNU General Public
 #  License along with Crypto-Automations. If not, see <https://www.gnu.org/licenses/>.
-import asyncio
-import crypto_automations as ca
 
-
-async def main():
-    await ca.setup(True)
-
-    move_from_binance_to_kucoin_rule = ca.Transfer([], [], ['BTC'], {'BTC': 0.1})
-    await move_from_binance_to_kucoin_rule.initialize()
-    await move_from_binance_to_kucoin_rule.run()
-
-
-asyncio.run(main())
+from crypto_automations.rules.transfer import *

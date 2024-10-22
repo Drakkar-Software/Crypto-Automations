@@ -13,16 +13,23 @@
 #
 #  You should have received a copy of the GNU General Public
 #  License along with Crypto-Automations. If not, see <https://www.gnu.org/licenses/>.
-import asyncio
-import crypto_automations as ca
+from crypto_automations.models.rule import Rule
 
 
-async def main():
-    await ca.setup(True)
+class Transfer(Rule):
+    def __init__(self, source_exchanges, destination_exchanges, assets_whitelist=None, minimum_amount_per_assets=None):
+        super().__init__()
+        self.source_exchange = source_exchanges
+        self.destination_exchange = destination_exchanges
+        self.assets_whitelist = assets_whitelist
+        self.minimum_amount_per_assets = minimum_amount_per_assets
 
-    move_from_binance_to_kucoin_rule = ca.Transfer([], [], ['BTC'], {'BTC': 0.1})
-    await move_from_binance_to_kucoin_rule.initialize()
-    await move_from_binance_to_kucoin_rule.run()
+    async def initialize(self):
+        # setup portfolio callbacks => trigger event awaited in run()
+        pass
 
+    async def run(self):
+        # wait for minimum amount per assets on each exchanges
+        # if an exchange reach the minimum => start a withdraw automation
+        pass
 
-asyncio.run(main())

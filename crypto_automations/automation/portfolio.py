@@ -14,15 +14,25 @@
 #  You should have received a copy of the GNU General Public
 #  License along with Crypto-Automations. If not, see <https://www.gnu.org/licenses/>.
 import asyncio
-import crypto_automations as ca
+
+from crypto_automations.models.automation import Automation
 
 
-async def main():
-    await ca.setup(True)
+class Portfolio(Automation):
+    def __init__(self, exchange, refresh_delay=30, on_refresh_async_callback=None):
+        super().__init__()
+        self.exchange = exchange
+        self.refresh_delay = refresh_delay
+        self.on_refresh_async_callback = on_refresh_async_callback
 
-    move_from_binance_to_kucoin_rule = ca.Transfer([], [], ['BTC'], {'BTC': 0.1})
-    await move_from_binance_to_kucoin_rule.initialize()
-    await move_from_binance_to_kucoin_rule.run()
+        self.portfolio = None
 
+    async def run(self):
+        # refresh portfolio based on refresh_delay
 
-asyncio.run(main())
+        # TODO fetch pf on exchange
+
+        await asyncio.sleep(self.refresh_delay)
+
+        if self.on_refresh_async_callback is not None:
+            await self.on_refresh_async_callback(self.portfolio)
