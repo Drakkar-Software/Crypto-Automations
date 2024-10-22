@@ -18,7 +18,7 @@ import typing
 
 import crypto_automations.internal as internals
 import crypto_automations.models as models
-import octobot_trading.personal_data as personal_data
+import octobot_trading.api as trading_api
 
 
 class Portfolio(models.Action):
@@ -29,7 +29,7 @@ class Portfolio(models.Action):
                  refresh_delay=DEFAULT_REFRESH_DELAY,
                  on_refresh_async_callback: typing.Optional[
                      typing.Callable[
-                         [personal_data.Portfolio], typing.Awaitable[None]
+                         [typing.Dict[str, typing.Dict]], typing.Awaitable[None]
                      ]
                  ] = None):
         super().__init__()
@@ -37,18 +37,16 @@ class Portfolio(models.Action):
         self.refresh_delay = refresh_delay
         self.on_refresh_async_callback = on_refresh_async_callback
 
-        self.portfolio: typing.Optional[personal_data.Portfolio] = None
+        self.portfolio: typing.Optional[typing.Dict[str, typing.Dict]] = None
 
     async def run(self):
         try:
             # refresh portfolio based on refresh_delay
             self.portfolio = await self.exchange.exchange_manager.exchange.get_balance()
-            print(self.portfolio)
-
-            await asyncio.sleep(self.refresh_delay)
-
             if self.on_refresh_async_callback is not None:
                 await self.on_refresh_async_callback(self.portfolio)
+
+            await asyncio.sleep(self.refresh_delay)
         except Exception as e:
             print(f"Failed to update balance: {e}")  # TODO logger
             await asyncio.sleep(self.refresh_delay)

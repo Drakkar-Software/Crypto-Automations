@@ -20,7 +20,8 @@ import typing
 import crypto_automations.actions as actions
 import crypto_automations.internal as internals
 import crypto_automations.models as models
-import octobot_trading.personal_data as personal_data
+
+import octobot_commons.constants as common_constants
 
 
 class Transfer(models.Rule):
@@ -48,12 +49,16 @@ class Transfer(models.Rule):
 
         self.pending_transfers: typing.List[actions.Withdraw] = []
 
-    async def portfolio_callback(self, exchange: internals.OctoBotExchange, portfolio: personal_data.Portfolio):
+    async def portfolio_callback(self, exchange: internals.OctoBotExchange, portfolio: typing.Dict[str, typing.Dict]):
         for asset, minimum_account in self.minimum_amount_per_assets.items():
-            asset_portfolio = portfolio.get_currency_portfolio(asset)
-            if asset_portfolio.available > minimum_account:
-                print(f"{exchange.name} has {asset_portfolio.available} {asset}")
-                await self.perform_transfer(exchange, asset, minimum_account)
+            asset_portfolio = portfolio.get(asset, None)
+            if asset_portfolio is not None:
+                asset_amount = asset_portfolio.get(common_constants.PORTFOLIO_AVAILABLE)
+                if asset_amount > minimum_account:
+                    print(f"{exchange.name} has {asset_amount} {asset}")
+                    await self.perform_transfer(exchange, asset, minimum_account)
+                else:
+                    print(f"{exchange.name} has not enough {asset}")
 
     async def perform_transfer(self, exchange, asset: str, amount: decimal.Decimal):
         # TODO support multiple destinations

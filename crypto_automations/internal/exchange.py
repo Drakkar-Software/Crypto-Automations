@@ -19,6 +19,7 @@ import crypto_automations.internal as internals
 import octobot_trading.api as trading_api
 import octobot_trading.exchanges as exchanges
 import octobot_commons.constants as commons_constants
+import octobot_commons.configuration as configuration
 
 # TODO remove
 import logging
@@ -47,9 +48,9 @@ class OctoBotExchange:
         # inject credentials
         mock_config['exchanges'] = {
             self.internal_name: {
-                commons_constants.CONFIG_EXCHANGE_KEY: self.api_key,
-                commons_constants.CONFIG_EXCHANGE_SECRET: self.api_secret,
-                commons_constants.CONFIG_EXCHANGE_PASSWORD: self.api_password,
+                commons_constants.CONFIG_EXCHANGE_KEY: configuration.encrypt(self.api_key).decode() if self.api_key is not None else None,
+                commons_constants.CONFIG_EXCHANGE_SECRET: configuration.encrypt(self.api_secret).decode() if self.api_secret is not None else None,
+                commons_constants.CONFIG_EXCHANGE_PASSWORD: configuration.encrypt(self.api_password).decode() if self.api_password is not None else None,
             }
         }
 
@@ -57,7 +58,6 @@ class OctoBotExchange:
             .is_real() \
             .is_rest_only() \
             .is_exchange_only() \
-            .is_ignoring_config() \
             .disable_trading_mode() \
             .build()
 

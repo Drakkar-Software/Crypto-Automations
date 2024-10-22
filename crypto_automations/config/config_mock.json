@@ -9,11 +9,11 @@
         }
   },
   "trader": {
-      "enabled": false,
+      "enabled": true,
       "load-trade-history": false
   },
   "trader-simulator": {
-      "enabled": true,
+      "enabled": false,
       "fees": {
           "maker": 0.01,
           "taker": 0.06
