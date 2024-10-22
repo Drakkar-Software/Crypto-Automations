@@ -40,11 +40,15 @@ class Portfolio(models.Action):
         self.portfolio: typing.Optional[personal_data.Portfolio] = None
 
     async def run(self):
-        # refresh portfolio based on refresh_delay
+        try:
+            # refresh portfolio based on refresh_delay
+            self.portfolio = await self.exchange.exchange_manager.exchange.get_balance()
+            print(self.portfolio)
 
-        # TODO fetch pf on exchange
+            await asyncio.sleep(self.refresh_delay)
 
-        await asyncio.sleep(self.refresh_delay)
-
-        if self.on_refresh_async_callback is not None:
-            await self.on_refresh_async_callback(self.portfolio)
+            if self.on_refresh_async_callback is not None:
+                await self.on_refresh_async_callback(self.portfolio)
+        except Exception as e:
+            print(f"Failed to update balance: {e}")  # TODO logger
+            await asyncio.sleep(self.refresh_delay)

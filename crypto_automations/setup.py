@@ -44,13 +44,15 @@ async def setup(quite_mode: bool) -> bool:
 
     # create exchange instances
     for exchange in config.get('exchanges', []):
-        internals.add_new_exchange(internals.OctoBotExchange(
+        created_exchange = internals.OctoBotExchange(
             name=exchange.get('name'),
             internal_name=exchange.get('internal_name'),
             api_key=exchange.get('api_key'),
             api_secret=exchange.get('api_secret'),
             api_password=exchange.get('api_password'),
-        ))
+        )
+        await created_exchange.initialize()
+        internals.add_new_exchange(created_exchange)
 
 
 async def install_all_tentacles(quite_mode: bool) -> bool:

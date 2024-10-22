@@ -13,6 +13,7 @@
 #
 #  You should have received a copy of the GNU General Public
 #  License along with Crypto-Automations. If not, see <https://www.gnu.org/licenses/>.
+import asyncio
 import decimal
 import typing
 
@@ -61,12 +62,19 @@ class Transfer(models.Rule):
     async def run(self):
         # create portfolio per exchange
         self.portfolio_per_exchange = {
-            exchange.name: actions.Portfolio(exchange, lambda pf: self.portfolio_callback(exchange, pf))
+            exchange.name: actions.Portfolio(exchange,
+                                             on_refresh_async_callback=lambda pf: self.portfolio_callback(exchange, pf))
             for exchange in self.source_exchange_instances
         }
 
+        # start portfolios
+        await asyncio.gather(*[
+            portfolio.run()
+            for portfolio in self.portfolio_per_exchange.values()
+        ])
+
     async def stop(self):
         if len(self.pending_transfers) > 0:
-            print(f"Error: trying to stop while {len(self.pending_transfers)} transfers are pending") # TODO use logger
+            print(f"Error: trying to stop while {len(self.pending_transfers)} transfers are pending")  # TODO use logger
         else:
             await super().stop()
