@@ -20,8 +20,12 @@ import crypto_automations as ca
 async def main():
     await ca.setup(True)
 
-    move_from_binance_to_kucoin_rule = ca.Transfer(['binance-test-1'], ['kucoin-test-1'], ['BTC'], {'BTC': 0.1})
-    await move_from_binance_to_kucoin_rule.run()
+    move_from_binance_to_kucoin_rule = ca.Transfer(
+        ['binance-test-1'],
+        ['kucoin-test-1'],
+        ['BTC'],
+        {'BTC': 0.1}).start()
 
+    await asyncio.gather(move_from_binance_to_kucoin_rule)
 
 asyncio.run(main())

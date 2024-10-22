@@ -20,7 +20,14 @@ class Rule:
     __metaclass__ = abc.ABCMeta
 
     def __init__(self):
-        pass
+        self.should_stop = False
+
+    async def start(self):
+        while not self.should_stop:
+            await self.run()
 
     async def run(self):
         raise NotImplementedError("run is not implemented")
+
+    async def stop(self):
+        self.should_stop = True

@@ -13,27 +13,60 @@
 #
 #  You should have received a copy of the GNU General Public
 #  License along with Crypto-Automations. If not, see <https://www.gnu.org/licenses/>.
+import decimal
 import typing
 
-from crypto_automations.models.rule import Rule
+import crypto_automations.actions as actions
+import crypto_automations.internal as internals
+import crypto_automations.models as models
+import octobot_trading.personal_data as personal_data
 
 
-class Transfer(Rule):
+class Transfer(models.Rule):
     def __init__(self,
                  source_exchanges: typing.List[str],
                  destination_exchanges: typing.List[str],
                  assets_whitelist: typing.Optional[typing.List[str]] = None,
                  minimum_amount_per_assets: typing.Optional[typing.Dict] = None):
         super().__init__()
-        self.source_exchange = source_exchanges
-        self.destination_exchange = destination_exchanges
+        self.source_exchanges = source_exchanges
+        self.destination_exchanges = destination_exchanges
         self.assets_whitelist = assets_whitelist
         self.minimum_amount_per_assets = minimum_amount_per_assets
 
-    async def run(self):
-        # initialize
-        # setup portfolio callbacks => trigger event awaited in run()
+        self.source_exchange_instances: typing.List[internals.OctoBotExchange] = [
+            internals.get_exchange(exchange)
+            for exchange in self.source_exchanges
+        ]
+        self.destination_exchange_instances: typing.List[internals.OctoBotExchange] = [
+            internals.get_exchange(exchange)
+            for exchange in self.destination_exchanges
+        ]
 
-        # wait for minimum amount per assets on each exchanges
-        # if an exchange reach the minimum => start a withdraw action
-        pass
+        self.portfolio_per_exchange: typing.Dict[str, actions.Portfolio] = {}
+
+        self.pending_transfers: typing.List[actions.Withdraw] = []
+
+    async def portfolio_callback(self, exchange: internals.OctoBotExchange, portfolio: personal_data.Portfolio):
+        for asset, minimum_account in self.minimum_amount_per_assets.items():
+            asset_portfolio = portfolio.get_currency_portfolio(asset)
+            if asset_portfolio.available > minimum_account:
+                print(f"{exchange.name} has {asset_portfolio.available} {asset}")
+                await self.perform_transfer(exchange, asset, minimum_account)
+
+    async def perform_transfer(self, exchange, asset: str, amount: decimal.Decimal):
+        # TODO support multiple destinations
+        await actions.Withdraw(exchange, self.destination_exchange_instances[0], asset, amount).run()
+
+    async def run(self):
+        # create portfolio per exchange
+        self.portfolio_per_exchange = {
+            exchange.name: actions.Portfolio(exchange, lambda pf: self.portfolio_callback(exchange, pf))
+            for exchange in self.source_exchange_instances
+        }
+
+    async def stop(self):
+        if len(self.pending_transfers) > 0:
+            print(f"Error: trying to stop while {len(self.pending_transfers)} transfers are pending") # TODO use logger
+        else:
+            await super().stop()
