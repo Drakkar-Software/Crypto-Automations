@@ -1,0 +1,12 @@
+# Drakkar-Software requirements
+OctoBot==2.0.6
+
+# manage tentacles install path
+appdirs==1.4.4
+
+# versions managed by OctoBot's dependencies
+jinja2
+aiohttp
+
+# necessary for pip install
+wheel
