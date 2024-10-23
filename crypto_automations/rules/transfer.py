@@ -22,28 +22,35 @@ import crypto_automations.internal as internals
 import crypto_automations.models as models
 
 import octobot_commons.constants as common_constants
+import octobot_trading.constants as trading_constants
 
 
 class Transfer(models.Rule):
     def __init__(self,
-                 source_exchanges: typing.List[str],
-                 destination_exchanges: typing.List[str],
+                 source_exchanges: typing.Optional[typing.List[str]] = None,
+                 source_wallets: typing.Optional[typing.List[str]] = None,
+                 destination_exchanges: typing.Optional[typing.List[str]] = None,
+                 destination_wallets: typing.Optional[typing.List[str]] = None,
                  assets_whitelist: typing.Optional[typing.List[str]] = None,
-                 minimum_amount_per_assets: typing.Optional[typing.Dict] = None):
+                 minimum_amount_per_assets: typing.Optional[typing.Dict] = None,
+                 destination_wallet_generation_count: typing.Optional[int] = None):
         super().__init__()
         self.source_exchanges = source_exchanges
+        self.source_wallets = source_wallets
         self.destination_exchanges = destination_exchanges
+        self.destination_wallets = destination_wallets
+        self.destination_wallet_generation_count = destination_wallet_generation_count
         self.assets_whitelist = assets_whitelist
         self.minimum_amount_per_assets = minimum_amount_per_assets
 
         self.source_exchange_instances: typing.List[internals.OctoBotExchange] = [
             internals.get_exchange(exchange)
             for exchange in self.source_exchanges
-        ]
+        ] if self.source_exchanges is not None else []
         self.destination_exchange_instances: typing.List[internals.OctoBotExchange] = [
             internals.get_exchange(exchange)
             for exchange in self.destination_exchanges
-        ]
+        ] if self.destination_exchanges is not None else []
 
         self.portfolio_per_exchange: typing.Dict[str, actions.Portfolio] = {}
 
@@ -53,7 +60,8 @@ class Transfer(models.Rule):
         for asset, minimum_account in self.minimum_amount_per_assets.items():
             asset_portfolio = portfolio.get(asset, None)
             if asset_portfolio is not None:
-                asset_amount = asset_portfolio.get(common_constants.PORTFOLIO_AVAILABLE)
+                asset_amount = asset_portfolio.get(common_constants.PORTFOLIO_AVAILABLE,
+                                                   asset_portfolio.get(trading_constants.CONFIG_PORTFOLIO_FREE))
                 if asset_amount > minimum_account:
                     print(f"{exchange.name} has {asset_amount} {asset}")
                     await self.perform_transfer(exchange, asset, minimum_account)
@@ -61,7 +69,8 @@ class Transfer(models.Rule):
                     print(f"{exchange.name} has not enough {asset}")
 
     async def perform_transfer(self, exchange, asset: str, amount: decimal.Decimal):
-        # TODO support multiple destinations
+        # TODO support multiple destinations (multiple destinations exchange or wallet)
+        # TODO support destination wallet generation
         await actions.Withdraw(exchange, self.destination_exchange_instances[0], asset, amount).run()
 
     async def run(self):
