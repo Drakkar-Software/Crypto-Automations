@@ -1,5 +1,5 @@
 #  This file is part of Crypto-Automations (https://github.com/Drakkar-Software/Crypto-Automations)
-#  Copyright (c) 2023 Drakkar-Software, All rights reserved.
+#  Copyright (c) 2024 Drakkar-Software, All rights reserved.
 #
 #  OctoBot is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU General Public License
@@ -21,6 +21,7 @@ import appdirs
 import crypto_automations
 import crypto_automations.constants as constants
 import octobot_commons.constants as commons_constants
+import octobot_commons.enums as commons_enums
 import octobot_tentacles_manager.api as octobot_tentacles_manager_api
 import octobot_tentacles_manager.constants as octobot_tentacles_manager_constants
 import octobot.configuration_manager as octobot_configuration_manager
@@ -39,7 +40,10 @@ def get_tentacles_config():
 
 def get_config():
     with open(get_module_config_path("config_mock.json")) as f:
-        return json.load(f)
+        config = json.load(f)
+        config[commons_constants.CONFIG_TIME_FRAME] = []
+        config[commons_constants.CONFIG_CRYPTO_CURRENCIES] = []
+        return config
 
 
 def get_module_install_path():

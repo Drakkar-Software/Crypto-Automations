@@ -1,0 +1,14 @@
+{
+  "exchanges": [{
+    "name": "binance-test-1",
+    "internal_name": "binance",
+    "api_key": "",
+    "api_secret": ""
+  },
+  {
+    "name": "kucoin-test-1",
+    "internal_name": "kucoin",
+    "api_key": "",
+    "api_secret": ""
+  }]
+}

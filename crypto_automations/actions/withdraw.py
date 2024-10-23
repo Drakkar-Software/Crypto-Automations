@@ -13,25 +13,25 @@
 #
 #  You should have received a copy of the GNU General Public
 #  License along with Crypto-Automations. If not, see <https://www.gnu.org/licenses/>.
-import asyncio
-import crypto_automations as ca
+import decimal
+
+import crypto_automations.internal as internals
+import crypto_automations.models as models
 
 
-async def main():
-    await ca.setup(True)
+class Withdraw(models.Action):
+    def __init__(self,
+                 source_exchange: internals.OctoBotExchange,
+                 destination_exchange: internals.OctoBotExchange,
+                 asset: str,
+                 amount: decimal.Decimal):
+        super().__init__()
+        self.source_exchange = source_exchange
+        self.destination_exchange = destination_exchange
+        self.asset = asset
+        self.amount = amount
 
-    move_from_binance_to_kucoin_rule = ca.Transfer(
-        source_exchanges=['binance-test-1'],
-        destination_exchanges=['kucoin-test-1'],
-        assets_whitelist=['BTC'],
-        minimum_amount_per_assets={'BTC': 0.1}).start()
-
-    move_from_kucoin_to_wallet_rule = ca.Transfer(
-        source_exchanges=['kucoin-test-1'],
-        destination_wallet_generation_count=3,
-        assets_whitelist=['BTC'],
-        minimum_amount_per_assets={'BTC': 0.1}).start()
-
-    await asyncio.gather(move_from_binance_to_kucoin_rule, move_from_kucoin_to_wallet_rule)
-
-asyncio.run(main())
+    async def run(self):
+        # get the deposit address
+        # withdraw to destination
+        pass
